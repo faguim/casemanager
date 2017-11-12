@@ -1,0 +1,147 @@
+<div class="page-header">
+  <h1>Case Authoring
+    <small></small>
+  </h1>
+</div>
+
+<form [formGroup]="caseForm" class="form-group">
+  <div (click)="$event.preventDefault()" class="row">
+    <div class="col-sm-6">
+      <button type="button" class="btn btn-primary" (click)="addState();">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add State
+      </button>
+    </div>
+
+    <div class="col-sm-6">
+      <button type="submit" class="btn btn-indigo" (click)="onSubmit()">
+        Send
+        <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
+      </button>
+      <app-field-control-error [showError]="verifyValidTouchedGroup(['name', 'states'])" msgError="There are invalid fields."></app-field-control-error>
+    </div>
+  </div>
+
+  <hr/>
+
+  <tabset class="form-group">
+    <tab heading="Case">
+      <div [ngClass]="applyCssError('', '', '', 'name')" class="row">
+        <div class="col-sm-6">
+          <label for="name">Name</label>
+          <input class="form-control" placeholder="Eg: Respiratory Failure" id="name" formControlName="name">
+          <app-field-control-error [showError]="verifyValidTouched('','','','name')" msgError="Name is required."></app-field-control-error>
+        </div>
+
+        <div class="col-sm-6">
+          <label for="timeout">Timeout (seconds)</label>
+          <input class="form-control" type="number" id="timeout" formControlName="timeout">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <label for="won_text">Won text</label>
+          <input class="form-control" placeholder="Congratulations, you won!" id="won_text" formControlName="won_text">
+        </div>
+
+        <div class="col-sm-6">
+          <label for="lost_text">Lost text</label>
+          <input class="form-control" placeholder="Game over: you lost! :(" id="lost_text" formControlName="lost_text">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <input type="checkbox" id="randomize_actions" formControlName="randomize_actions" />
+          <label for="randomize_actions">Randomize actions order</label>
+        </div>
+
+        <div class="col-sm-6">
+          <input type="checkbox" id="allow_negative_score" formControlName="allow_negative_score" />
+          <label for="allow_negative_score">Allow negative score</label>
+        </div>
+      </div>
+    </tab>
+
+    <tab formArrayName="states" *ngFor="let state of getStates(); let i=index" heading="{{state.get('title').value}}" (select)="active = true"
+      [removable]="true" (removed)="removeTabHandler(state)">
+
+      <div [formGroupName]="i">
+
+        <div class="row">
+          <div class="col-sm-6">
+            <label for="title">Title</label>
+            <input class="form-control" formControlName="title" id="title">
+          </div>
+
+          <div class="col-sm-6" [ngClass]="applyCssError(i,'', 'state', 'description')">
+            <label for="description">Description</label>
+            <textarea class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours."
+              formControlName="description" id="description"></textarea>
+            <app-field-control-error [showError]="verifyValidTouched(i, '', 'states','description')" msgError="Description is required."></app-field-control-error>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+
+            <blockquote *ngIf="showActions(i)">
+              <label for="actions">Actions</label>
+            </blockquote>
+
+              <div class="" *ngIf="showActions(i)">
+                <div id="actions" formArrayName="actions" *ngFor="let action of state.controls['actions'].controls; let j=index" class="well">
+                  <div [formGroupName]="j" class="row">
+                    <div class="col-sm-2">
+                      <div>
+                        <input type="checkbox" id="correct{{j}}" formControlName="correct" />
+                        <label for="correct{{j}}">Correct</label>
+                      </div>
+  
+                      <div>
+                        <input type="checkbox" id="proceed{{j}}" formControlName="proceed" />
+                        <label for="proceed{{j}}">Proceed</label>
+                      </div>
+  
+                    </div>
+  
+                    <div class="col-sm-5" [ngClass]="applyCssError(i, j, 'action','text')">
+                      <label for="text">Text</label>
+                      <textarea placeholder="Ex: Take an immediate action" class="form-control" formControlName="text" id="text"></textarea>
+                      <app-field-control-error [showError]="verifyValidTouched(i,j,'actions','text')" msgError="Text is required."></app-field-control-error>
+                    </div>
+  
+                    <div class="col-sm-5" [ngClass]="applyCssError(i, j, 'action','target')">
+                      <label for="target">Target</label>
+                      <select (focus)="fulfillStates(i)" id="target" formControlName="target" class="form-control">
+                        <option value=null disabled selected>Choose one state</option>
+                        <option value="{{s.get('ident').value}}" *ngFor="let s of targetStates?.controls; let v = index">{{s.get('title').value}}</option>
+                      </select>
+                      <app-field-control-error [showError]="verifyValidTouched(i,j,'actions','target')" msgError="Action is required."></app-field-control-error>
+  
+                      <a role="presentation" class="btn btn-link" id="add_state" (click)="addState()">
+                        + New State
+                      </a>
+                    </div>
+  
+                  </div>
+                </div>
+              </div>
+              <button id="add_action" (click)="addAction(i)" class="col-sm4 btn btn-primary">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Action
+              </button>
+
+          </div>
+
+
+
+
+        </div>
+
+
+
+      </div>
+    </tab>
+
+  </tabset>
+</form>

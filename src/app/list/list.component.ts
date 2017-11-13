@@ -11,16 +11,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ListComponent implements OnInit {
 
-  public isCollapsed:boolean = false;
-  
-   public collapsed(event:any):void {
+  public isCollapsed: boolean = false;
+
+  public collapsed(event: any): void {
     //  console.log(event);
-   }
-  
-   public expanded(event:any):void {
+  }
+
+  public expanded(event: any): void {
     //  console.log(event);
-   }
-  
+  }
+
   public case;
   public cases;
 
@@ -32,7 +32,7 @@ export class ListComponent implements OnInit {
       },
       (err) => {
         console.error('ApiService::handleError', err);
-      }     
+      }
     );
   }
 
@@ -43,7 +43,7 @@ export class ListComponent implements OnInit {
       },
       (err) => {
         console.error('ApiService::handleError', err);
-      }     
+      }
     );
   }
 
@@ -55,4 +55,8 @@ export class ListComponent implements OnInit {
     this.getCase(1);
   }
 
+  getTarget(i) {
+    let statesCtrl = this.cases.get('states').at(i);
+    // return statesCtrl.get('title');
+  }
 }

@@ -1,31 +1,36 @@
 <div class="page-header">
-  <h1 class="header">Case Listing</h1>
+  <h1>Case Listing
+    <small></small>
+  </h1>
 </div>
 
-
-
 <div class="row">
-  <div class="panel panel-default">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Cases</div>
-    <!-- Table -->
-    <ul class="list-group">
-      <li class="list-group-item" *ngFor="let case of cases?.medicalCase">{{case.name}}</li>
-    </ul>
-  </div>
-  <hr>
-  
-  <accordion [closeOthers]="true">
-    <accordion-group *ngFor="let state of case?.states" heading="{{state.title}}: {{state.description}}">
-      <ul class="collapsible popout list-group">
-        <li class="collapsible-header list-group-item" *ngFor="let action of state.actions">
-          <div > Text: {{ action.text }}</div>
-          <div > Target {{ action.target.title }}</div>
-          
-        </li>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading">Cases</div>
+      <!-- Table -->
+      <ul class="list-group">
+        <li class="list-group-item" *ngFor="let case of cases">{{case.name}}</li>
       </ul>
-    </accordion-group>
-  </accordion>
+    </div>
+    <hr>
+
+  </div>
+
+  <div class="col-md-6">
+    <accordion [closeOthers]="true">
+      <accordion-group *ngFor="let state of case?.states" heading="{{state.title}}: {{state.description}}">
+        <ul class="collapsible popout list-group">
+          <li class="collapsible-header list-group-item" *ngFor="let action of state.actions">
+            <div > Text: {{ action.text }}</div>
+            <div > Target: {{ case?.states[action.target].title }}</div>
+            
+          </li>
+        </ul>
+      </accordion-group>
+    </accordion>
+  </div>      
 
   <!-- <div class="col s10">
     <ul class="collapsible popout" data-collapsible="accordion" watch collapsable="true" >

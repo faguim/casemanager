@@ -72,14 +72,20 @@
           <div class="col-sm-6">
             <label for="title">Title</label>
             <input class="form-control" formControlName="title" id="title">
+
+            <label for="feedback">Feedback</label>
+            <textarea class="form-control" data-length="120" placeholder="Your patient does not have conditions to be examined" id="feedback" rows="2"
+            formControlName="feedback"></textarea>
           </div>
 
           <div class="col-sm-6" [ngClass]="applyCssError(i,'', 'state', 'description')">
             <label for="description">Description</label>
-            <textarea class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours."
+            <textarea class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours." rows="5"
               formControlName="description" id="description"></textarea>
             <app-field-control-error [showError]="verifyValidTouched(i, '', 'states','description')" msgError="Description is required."></app-field-control-error>
+           
           </div>
+
         </div>
 
         <div class="row">

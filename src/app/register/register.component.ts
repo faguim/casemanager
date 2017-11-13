@@ -32,6 +32,7 @@ export class RegisterComponent implements OnInit {
       ident: [(<FormArray>this.caseForm.get('states')).length],
       title: [title],
       description: ['', Validators.required],
+      feedback: [''],
       actions: this.formBuilder.array([])
     });
   }

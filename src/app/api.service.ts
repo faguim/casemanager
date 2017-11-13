@@ -28,8 +28,8 @@ export class ApiService {
   // API: GET /cases
   public getAllCases(): Observable<any> {
     // return this.jsonp.get(API_URL + '/casejsonp?callback=JSONP_CALLBACK').map( res => { return res.json(); } );
+    console.log(API_URL);
     return this.http.get(API_URL + '/cases').map(res => {
-      console.log('resposta',res.json());
       return res.json();
     });
 

@@ -28,8 +28,16 @@
       <div [ngClass]="applyCssError('', '', '', 'name')" class="row">
         <div class="col-sm-6">
           <label for="name">Name</label>
-          <input class="form-control" placeholder="Eg: Respiratory Failure" id="name" formControlName="name">
+          <input (blur)="getOntologyResources(name)" class="form-control" placeholder="Eg: Respiratory Failure" id="name" formControlName="name" #name>
           <app-field-control-error [showError]="verifyValidTouched('','','','name')" msgError="Name is required."></app-field-control-error>
+
+
+          <button *ngFor="let resource of resources?.controls" class="chip" (click)="chooseResource(name)">
+            {{resource.get('label').value}}
+
+          </button>
+
+
         </div>
 
         <div class="col-sm-6">
@@ -74,16 +82,16 @@
             <input class="form-control" formControlName="title" id="title">
 
             <label for="feedback">Feedback</label>
-            <textarea class="form-control" data-length="120" placeholder="Your patient does not have conditions to be examined" id="feedback" rows="2"
-            formControlName="feedback"></textarea>
+            <textarea class="form-control" data-length="120" placeholder="Your patient does not have conditions to be examined" id="feedback"
+              rows="2" formControlName="feedback"></textarea>
           </div>
 
           <div class="col-sm-6" [ngClass]="applyCssError(i,'', 'state', 'description')">
             <label for="description">Description</label>
-            <textarea class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours." rows="5"
-              formControlName="description" id="description"></textarea>
+            <textarea class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours."
+              rows="5" formControlName="description" id="description"></textarea>
             <app-field-control-error [showError]="verifyValidTouched(i, '', 'states','description')" msgError="Description is required."></app-field-control-error>
-           
+
           </div>
 
         </div>
@@ -95,47 +103,47 @@
               <label for="actions">Actions</label>
             </blockquote>
 
-              <div class="" *ngIf="showActions(i)">
-                <div id="actions" formArrayName="actions" *ngFor="let action of state.controls['actions'].controls; let j=index" class="well">
-                  <div [formGroupName]="j" class="row">
-                    <div class="col-sm-2">
-                      <div>
-                        <input type="checkbox" id="correct{{j}}" formControlName="correct" />
-                        <label for="correct{{j}}">Correct</label>
-                      </div>
-  
-                      <div>
-                        <input type="checkbox" id="proceed{{j}}" formControlName="proceed" />
-                        <label for="proceed{{j}}">Proceed</label>
-                      </div>
-  
+            <div class="" *ngIf="showActions(i)">
+              <div id="actions" formArrayName="actions" *ngFor="let action of state.controls['actions'].controls; let j=index" class="well">
+                <div [formGroupName]="j" class="row">
+                  <div class="col-sm-2">
+                    <div>
+                      <input type="checkbox" id="correct{{j}}" formControlName="correct" />
+                      <label for="correct{{j}}">Correct</label>
                     </div>
-  
-                    <div class="col-sm-5" [ngClass]="applyCssError(i, j, 'action','text')">
-                      <label for="text">Text</label>
-                      <textarea placeholder="Ex: Take an immediate action" class="form-control" formControlName="text" id="text"></textarea>
-                      <app-field-control-error [showError]="verifyValidTouched(i,j,'actions','text')" msgError="Text is required."></app-field-control-error>
+
+                    <div>
+                      <input type="checkbox" id="proceed{{j}}" formControlName="proceed" />
+                      <label for="proceed{{j}}">Proceed</label>
                     </div>
-  
-                    <div class="col-sm-5" [ngClass]="applyCssError(i, j, 'action','target')">
-                      <label for="target">Target</label>
-                      <select (focus)="fulfillStates(i)" id="target" formControlName="target" class="form-control">
-                        <option value=null disabled selected>Choose one state</option>
-                        <option value="{{s.get('ident').value}}" *ngFor="let s of targetStates?.controls; let v = index">{{s.get('title').value}}</option>
-                      </select>
-                      <app-field-control-error [showError]="verifyValidTouched(i,j,'actions','target')" msgError="Action is required."></app-field-control-error>
-  
-                      <a role="presentation" class="btn btn-link" id="add_state" (click)="addState()">
-                        + New State
-                      </a>
-                    </div>
-  
+
                   </div>
+
+                  <div class="col-sm-5" [ngClass]="applyCssError(i, j, 'action','text')">
+                    <label for="text">Text</label>
+                    <textarea placeholder="Ex: Take an immediate action" class="form-control" formControlName="text" id="text"></textarea>
+                    <app-field-control-error [showError]="verifyValidTouched(i,j,'actions','text')" msgError="Text is required."></app-field-control-error>
+                  </div>
+
+                  <div class="col-sm-5" [ngClass]="applyCssError(i, j, 'action','target')">
+                    <label for="target">Target</label>
+                    <select (focus)="fulfillStates(i)" id="target" formControlName="target" class="form-control">
+                      <option value=null disabled selected>Choose one state</option>
+                      <option value="{{s.get('ident').value}}" *ngFor="let s of targetStates?.controls; let v = index">{{s.get('title').value}}</option>
+                    </select>
+                    <app-field-control-error [showError]="verifyValidTouched(i,j,'actions','target')" msgError="Action is required."></app-field-control-error>
+
+                    <a role="presentation" class="btn btn-link" id="add_state" (click)="addState()">
+                      + New State
+                    </a>
+                  </div>
+
                 </div>
               </div>
-              <button id="add_action" (click)="addAction(i)" class="col-sm4 btn btn-primary">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Action
-              </button>
+            </div>
+            <button id="add_action" (click)="addAction(i)" class="col-sm4 btn btn-primary">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Action
+            </button>
 
           </div>
 

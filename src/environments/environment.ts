@@ -7,5 +7,7 @@ export const environment = {
   production: false,
 
   // URL of development API
-  apiUrl: 'http://localhost:8080/gameserver/rest'
+  apiUrl: 'http://localhost:8080/gameserver/rest',
+  ontoMatch: 'http://localhost:8080/ontomatch/rest'
+  
 };

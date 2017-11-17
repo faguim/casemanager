@@ -9,6 +9,8 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw'
 
 const API_URL = environment.apiUrl;
+const ONTOMATCH_URL = environment.ontoMatch;
+
 
 @Injectable()
 export class ApiService {
@@ -30,12 +32,23 @@ export class ApiService {
     // return this.jsonp.get(API_URL + '/casejsonp?callback=JSONP_CALLBACK').map( res => { return res.json(); } );
     console.log(API_URL);
     return this.http.get(API_URL + '/cases').map(res => {
+      
       return res.json();
     });
-
   }
 
+  // API: GET /resources
+  public getOntologyResources(text): Observable<Response> {
+    console.log(ONTOMATCH_URL+ '/resources');
+    return this.http.post(ONTOMATCH_URL + '/resources', JSON.stringify({text: text})).map(res => {
+      return res.json();
+    });
+  }
+
+
   public save(medicalcase: any): Observable<Response> {
-    return this.http.post(API_URL + '/case/save', JSON.stringify(medicalcase)).map(res => { return res.json(); });;
+    return this.http.post(API_URL + '/case/save', JSON.stringify(medicalcase)).map(res => { 
+      return res.json(); 
+    });
   }
 }

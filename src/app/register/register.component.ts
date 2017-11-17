@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import * as _ from 'lodash';
 
 import { ApiService } from './../api.service';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
+import { forEach } from '@angular/router/src/utils/collection';
 
 @Component({
   selector: 'app-register',
@@ -14,8 +15,16 @@ import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@ang
 export class RegisterComponent implements OnInit {
   caseForm: FormGroup;
 
-  targetStates:FormArray;
+  targetStates: FormArray;
 
+  public resources: FormArray;
+
+  addResources(label, uri) {
+    this.resources.push(this.formBuilder.group({
+      label: [label],
+      uri: [uri]
+    }));
+  }
 
   addState() {
     let statesForm = this.caseForm.get('states') as FormArray;
@@ -73,7 +82,8 @@ export class RegisterComponent implements OnInit {
         timeout: [10],
         states: this.formBuilder.array([])
       }
-    )
+    );
+    this.resources = this.formBuilder.array([]);
   }
 
   onSubmit() {
@@ -151,7 +161,7 @@ export class RegisterComponent implements OnInit {
 
   verifyValidTouched(i, j, parent, field) {
     if (parent == "")
-      return !this.caseForm.get(field).valid && ( this.caseForm.get(field).touched || this.caseForm.get(field).dirty);
+      return !this.caseForm.get(field).valid && (this.caseForm.get(field).touched || this.caseForm.get(field).dirty);
     else {
       if (parent == 'states') {
         let arrayControl = this.caseForm.get(parent) as FormArray;
@@ -170,9 +180,9 @@ export class RegisterComponent implements OnInit {
 
     for (var i in fields) {
       let field = fields[i];
-      if (!this.caseForm.get(field).valid && (this.caseForm.get(field).touched || this.caseForm.get(field).dirty))  {
+      if (!this.caseForm.get(field).valid && (this.caseForm.get(field).touched || this.caseForm.get(field).dirty)) {
         return true;
-      } 
+      }
     }
   }
 
@@ -198,9 +208,35 @@ export class RegisterComponent implements OnInit {
     this.targetStates.removeAt(i)
   }
 
+  getOntologyResources(element) {
+    this.resources = this.formBuilder.array([]);
+    this.api.getOntologyResources(element.value).subscribe(
+      (res) => {
+        Object.keys(res).forEach(field => {
+          this.addResources(res[field].label, res[field].uri);
+          this.cd.markForCheck();
+        });
+        return this.resources;
+      },
+      (err) => {
+        console.error('ApiService::handleError', err);
+      }
+    );
+  }
+
+  getResources(name) {
+    console.log(this.resources);
+    return this.resources;
+  }
+
+  chooseResource(name) {
+
+  }
+
   constructor(
     private api: ApiService,
-    private formBuilder: FormBuilder) {
+    private formBuilder: FormBuilder,
+    private cd: ChangeDetectorRef) {
   }
 }
 

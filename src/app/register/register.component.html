@@ -26,15 +26,16 @@
   <tabset class="form-group">
     <tab heading="Case">
       <div [ngClass]="applyCssError('', '', '', 'name')" class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-6" formGroupName="name">
           <label for="name">Name</label>
-          <input (blur)="getOntologyResources(name)" class="form-control" placeholder="Eg: Respiratory Failure" id="name" formControlName="name" #name>
+          <input (blur)="getOntologyResources(name, 'name')" class="form-control" placeholder="Eg: Respiratory Failure" id="name" formControlName="value"
+            #name>
           <app-field-control-error [showError]="verifyValidTouched('','','','name')" msgError="Name is required."></app-field-control-error>
 
-
-          <button *ngFor="let resource of resources?.controls" class="chip" (click)="chooseResource(name)">
-            {{resource.get('label').value}}
-
+          <button formArrayName="concepts" *ngFor="let concept of getConcepts('', 'name'); let m=index" class="chip" (click)="chooseResource(name)">
+            <div [formGroupName]="m">
+              {{concept.get('label').value}}
+            </div>
           </button>
 
 
@@ -86,12 +87,17 @@
               rows="2" formControlName="feedback"></textarea>
           </div>
 
-          <div class="col-sm-6" [ngClass]="applyCssError(i,'', 'state', 'description')">
+          <div class="col-sm-6" [ngClass]="applyCssError(i,'', 'state', 'description')" formGroupName="description">
             <label for="description">Description</label>
-            <textarea class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours."
-              rows="5" formControlName="description" id="description"></textarea>
+            <textarea (blur)="getOntologyResources(description, 'description')" class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours."
+              rows="5" formControlName="value" id="description" #description></textarea>
             <app-field-control-error [showError]="verifyValidTouched(i, '', 'states','description')" msgError="Description is required."></app-field-control-error>
 
+            <button formArrayName="concepts" *ngFor="let concept of getConcepts('', 'description'); let m=index" class="chip" (click)="chooseResource(name)">
+                <div [formGroupName]="m">
+                  {{concept.get('label').value}}
+                </div>
+              </button>
           </div>
 
         </div>

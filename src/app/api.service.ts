@@ -40,7 +40,7 @@ export class ApiService {
   // API: GET /resources
   public getOntologyResources(text): Observable<Response> {
     console.log(ONTOMATCH_URL+ '/resources');
-    return this.http.post(ONTOMATCH_URL + '/resources', JSON.stringify({text: text})).map(res => {
+    return this.http.post(ONTOMATCH_URL + '/metamap/resources', JSON.stringify({text: text})).map(res => {
       return res.json();
     });
   }

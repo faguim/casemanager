@@ -44,7 +44,10 @@ export class RegisterComponent implements OnInit {
         value: ['', Validators.required],
         concepts: this.formBuilder.array([]),
       }),
-      feedback: [''],
+      feedback: this.formBuilder.group({
+        value: ['', Validators.required],
+        concepts: this.formBuilder.array([]),
+      }),
       actions: this.formBuilder.array([])
     });
   }
@@ -95,7 +98,6 @@ export class RegisterComponent implements OnInit {
   onSubmit() {
     if (!this.caseForm.valid) {
       this.verifyValidation(this.caseForm);
-    } else {
       console.log(this.caseForm.value)
       this.api.save(this.caseForm.value).subscribe(
         (res) => {
@@ -214,22 +216,26 @@ export class RegisterComponent implements OnInit {
     this.targetStates.removeAt(i)
   }
 
-  getOntologyResources(element, field) {
+  getOntologyResources(element, field, index) {
+    element.visible = true;
     // this.resources = this.formBuilder.array([]);
+    let control = this.getControl(this.caseForm, field, index);
+    let concepts = control.get("concepts") as FormArray;
+
+    Object.keys(concepts.controls).forEach(i => {
+      concepts.removeAt(0);
+    });
+
     this.api.getOntologyResources(element.value).subscribe(
       (res) => {
+        element.visible = false;
         Object.keys(res).forEach(i => {
-          console.log('foi buscar', field);
-          let control = this.getControl(this.caseForm, field);
-          console.log(control);
-          let concepts = control.get("concepts") as FormArray;
           concepts.push(this.formBuilder.group({
             label: [res[i].label],
             uri: [res[i].uri]
           }));
           this.cd.markForCheck();
         });
-        // return this.resources;
       },
       (err) => {
         console.error('ApiService::handleError', err);
@@ -237,77 +243,58 @@ export class RegisterComponent implements OnInit {
     );
   }
 
-  getConcepts(control, name) {
+  concepts;
+  getConcepts(control, name, i) {
     if (control == ''){
       control = this.caseForm;
     }
-    let concepts;
+    let matched = false;
     
     Object.keys(control.controls).forEach(key => {
-      // console.log(key);
-      // console.log(control.get(key));
-      let control1 = control.get(key);
-      if (key == name){
-        // console.log('Control: '+control1.get('concepts').controls);
-        concepts = control1.get('concepts').controls;
-        // return control1.get('concepts').controls;
-      }
-      if (control1 instanceof FormGroup) {
-        // console.log('Group: '+control1)
-        return this.getConcepts(control1, name)
-      }
-      if (control1 instanceof FormArray) {
-        // console.log(control1.length);
-        Object.keys(control1.controls).forEach(key => {
-          // console.log(key);
-          let eachElement = control1.get(key);
-          // console.log(eachElement);
-      //     console.log('Array: '+control1);
-          return this.getConcepts(eachElement, name)
-        });
+      if (!matched){
+        let innerControl = control.get(key);
+        if (key == name){
+          matched = true;
+          return this.concepts = innerControl.get('concepts').controls;
+        }
+        if (innerControl instanceof FormGroup) {
+          return this.getConcepts(innerControl, name, i)
+        }
+        if (innerControl instanceof FormArray) {
+          let eachElementArray = innerControl.at(i);
+          if (eachElementArray){
+            return this.getConcepts(innerControl.at(i), name, i)
+          }
+        }
       }
     });
-    // console.log('chegou aqui', name);
-    return concepts;
-    // console.log(<FormArray>((<FormGroup>this.caseForm.get('name')).get("concepts")));
-    // return (<FormArray>((<FormGroup>this.caseForm.get(name)).get("concepts"))).controls;
+    return this.concepts;
   }
 
-  getControl(inputControl, controlName){
-    let outputControl;
+  outputControl;
+  getControl(inputControl, controlName, index){
     let matched = false;
     
     Object.keys(inputControl.controls).forEach(key => {
-      console.log(key, '   ', controlName);
       if (!matched){
         
         if (key == controlName){
-          // console.log('Control: '+control1.get('concepts').controls);
-          console.log(key);
           matched = true;
-          return outputControl = inputControl.get(controlName);
+          return this.outputControl = inputControl.get(controlName);
         }
-        console.log('continuou');
-        let control1 = inputControl.get(key);
-        
-        if (control1 instanceof FormGroup) {
-          // console.log('Group: '+control1)
-          return this.getControl(control1, controlName)
+        let innerControl = inputControl.get(key);
+        if (innerControl instanceof FormGroup) {
+          return this.getControl(innerControl, controlName, index)
         }
-        if (control1 instanceof FormArray) {
-          // console.log(control1.length);
-          Object.keys(control1.controls).forEach(key => {
-            let eachElement = control1.get(key);
-            console.log(eachElement);
-        //     console.log('Array: '+control1);
-            return this.getControl(eachElement, controlName)
-          });
+        if (innerControl instanceof FormArray) {
+          let elementArray = innerControl.at(index);
+          if (elementArray){
+            return this.getControl(elementArray, controlName, index)
+          }
         }
-
       }
     });      
-    console.log(outputControl);
-    return outputControl;
+    return this.outputControl;
   }
 
   chooseResource(name) {

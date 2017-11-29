@@ -28,11 +28,18 @@
       <div [ngClass]="applyCssError('', '', '', 'name')" class="row">
         <div class="col-sm-6" formGroupName="name">
           <label for="name">Name</label>
-          <input (blur)="getOntologyResources(name, 'name')" class="form-control" placeholder="Eg: Respiratory Failure" id="name" formControlName="value"
-            #name>
+          <input (blur)="getOntologyResources(name, 'name', 0)" class="form-control" placeholder="Eg: Respiratory Failure" id="name"
+            formControlName="value" #name>
           <app-field-control-error [showError]="verifyValidTouched('','','','name')" msgError="Name is required."></app-field-control-error>
 
-          <button formArrayName="concepts" *ngFor="let concept of getConcepts('', 'name'); let m=index" class="chip" (click)="chooseResource(name)">
+          <div class="progress" *ngIf="name.visible">
+            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"
+              style="width: 45%">
+              Loading Concepts
+            </div>
+          </div>
+
+          <button formArrayName="concepts" *ngFor="let concept of getConcepts('', 'name', 0); let m=index" class="chip" (click)="chooseResource(name)">
             <div [formGroupName]="m">
               {{concept.get('label').value}}
             </div>
@@ -82,22 +89,45 @@
             <label for="title">Title</label>
             <input class="form-control" formControlName="title" id="title">
 
-            <label for="feedback">Feedback</label>
-            <textarea class="form-control" data-length="120" placeholder="Your patient does not have conditions to be examined" id="feedback"
-              rows="2" formControlName="feedback"></textarea>
-          </div>
+            <div formGroupName="feedback">
+              <label for="feedback">Feedback</label>
+              <textarea (blur)="getOntologyResources(feedback, 'feedback', i)" class="form-control" data-length="120" placeholder="Your patient does not have conditions to be examined"
+                id="feedback" rows="2" formControlName="value" #feedback></textarea>
 
-          <div class="col-sm-6" [ngClass]="applyCssError(i,'', 'state', 'description')" formGroupName="description">
-            <label for="description">Description</label>
-            <textarea (blur)="getOntologyResources(description, 'description')" class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours."
-              rows="5" formControlName="value" id="description" #description></textarea>
-            <app-field-control-error [showError]="verifyValidTouched(i, '', 'states','description')" msgError="Description is required."></app-field-control-error>
+              <div class="progress" *ngIf="feedback.visible">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"
+                  style="width: 45%">
+                  Loading Concepts
+                </div>
+              </div>
 
-            <button formArrayName="concepts" *ngFor="let concept of getConcepts('', 'description'); let m=index" class="chip" (click)="chooseResource(name)">
+              <button formArrayName="concepts" *ngFor="let concept of getConcepts('', 'feedback', i); let m=index" class="chip" (click)="chooseResource(name)">
                 <div [formGroupName]="m">
                   {{concept.get('label').value}}
                 </div>
               </button>
+            </div>
+
+          </div>
+
+          <div class="col-sm-6" [ngClass]="applyCssError(i,'', 'state', 'description')" formGroupName="description">
+            <label for="description">Description</label>
+            <textarea (blur)="getOntologyResources(description, 'description', i)" class="form-control" data-length="120" placeholder="Ex: Female patient, 54 years old, with shortness of breath in the last 5 hours."
+              rows="5" formControlName="value" id="description" #description></textarea>
+            <app-field-control-error [showError]="verifyValidTouched(i, '', 'states','description')" msgError="Description is required."></app-field-control-error>
+
+            <div class="progress" *ngIf="description.visible" >
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"
+                style="width: 45%">
+                Loading Concepts
+              </div>
+            </div>
+
+            <button formArrayName="concepts" *ngFor="let concept of getConcepts('', 'description', i); let m=index" class="chip" (click)="chooseResource(name)">
+              <div [formGroupName]="m">
+                {{concept.get('label').value}}
+              </div>
+            </button>
           </div>
 
         </div>
